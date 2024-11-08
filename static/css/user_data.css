@@ -1,0 +1,12 @@
+body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-box-shadow: inset 0px 0px 400px #000000;
+    box-shadow: inset 0px 0px 400px #000000;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.35)), url('/static/img/bg2.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }

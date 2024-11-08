@@ -63,7 +63,7 @@ def update_pose(username):
     for user in user_data:
         if user['username'] == username:
                 user['History'].append({"name": pose_name, "status": "complete"})
-                print(f'added pos to {user}') # debugging
+                print(f"added pos to {user['username']}") # debugging
                 break
 
     save_user_data(user_data)
@@ -279,6 +279,10 @@ def user_data():
     user_data = next((user for user in users if user['username'] == current_user), None)
 
     return render_template('user_data.html', user=user_data)
+
+@app.route('/meditation')
+def meditation():
+    return render_template('meditation.html')
 
 if __name__ == "__main__":
     socket.run(app, allow_unsafe_werkzeug=True, debug=True)
