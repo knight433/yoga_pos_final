@@ -28,8 +28,9 @@
                 <div style="padding-top: 8%; text-align: center; max-width: 100%">
                     <button type="button" id='startButton' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="start()">Start</button>
                     <button type="button" id='getHeatmap' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="getHeatmap()">Get heatMap</button>
+            
                 </div>
-
+                <a href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>
     </div>
@@ -90,14 +91,7 @@ function getHeatmap() {
     
 }
 
-// function startTimer() {
-//     // Set the timer for 5 seconds (5000 milliseconds)
-//     timerId = setTimeout(function() {
-//         console.log("Timer expired. Updating element...");
-//         socket.disconnect();
-//         document.getElementById('poseStatus').innerText = 'Timer ran out.';
-//     }, 5000);
-// }
+
     
 </script>
 

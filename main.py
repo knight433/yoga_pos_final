@@ -1,15 +1,15 @@
-from flask import Flask, render_template, Response, url_for, request, redirect, jsonify
+from flask import Flask, render_template, Response, url_for, request, redirect, jsonify, session
 from flask_socketio import SocketIO, emit
 import YogaPose
 import mediapipe as mp
 import cv2
 import os
 import heatmap
-import threading
 import pyttsx3
+import json
 
 app = Flask(__name__)
-
+app.secret_key = 'mykey'
 socket = SocketIO(app)
 
 global camera
@@ -46,6 +46,14 @@ def checkPoseCompletion(bool_list):
     is_proper_pose = all(result[0] for result in bool_list)
     return is_proper_pose
 
+def storeAngles(username,pos_details):
+
+    pass
+
+# Load user data from userData.json
+def load_user_data():
+    with open('static/json/userData.json', 'r') as f:
+        return json.load(f)
 
 class CamInput:
     def __init__(self) -> None:
@@ -103,8 +111,8 @@ class CamInput:
         self.frame_count = 0
         global genHeatMap
         genHeatMap = False
-        tts_thread = threading.Thread(target=self.speak)
-        tts_thread.start()
+        # tts_thread = threading.Thread(target=self.speak)
+        # tts_thread.start()
         with self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
             while self.camera.isOpened():
                 success, frame = self.camera.read()
@@ -160,10 +168,6 @@ class CamInput:
                 
                 self.frame_count += 1
 
-                if self.frame_count%500 == 0:               
-                    self.speak(temp_list)
-                      
-
                 ret, buffer = cv2.imencode('.jpg', image)
                 frame = buffer.tobytes()
                 yield (b'--frame\r\n'
@@ -175,12 +179,38 @@ class CamInput:
 
 global cam_obj
 
-#hello
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Load user data and check if the user exists
+        user_data = load_user_data()
+        for user in user_data:
+            if user['username'] == username and user['password'] == password:
+                session['username'] = username  # Store the user in session
+                return redirect(url_for('home'))
+        
+        # Display error if credentials are invalid
+        error = 'Invalid username or password. Please try again.'
+        return render_template('login.html', error=error)
+    
+    return render_template('login.html')
+
 @app.route('/')
 def home():
-    json_url = url_for('static', filename='json/pose_details.json')
-    return render_template('index.html', json_url=json_url)
+    if 'username' in session:
+        json_url = url_for('static', filename='json/pose_details.json')
+        return render_template('index.html', json_url=json_url)
+    else:
+        return redirect(url_for('login'))
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)  # Remove user from session
+    return redirect(url_for('login'))
 
 @app.route('/perform', methods=['POST'])
 def perform():
@@ -221,6 +251,10 @@ def conn():
     print('here') #debugging
     global genHeatMap
     genHeatMap = True 
+
+@socket.on('addData')
+def storeAngles():
+    pass
 
 if __name__ == "__main__":
     socket.run(app, allow_unsafe_werkzeug=True, debug=True)
