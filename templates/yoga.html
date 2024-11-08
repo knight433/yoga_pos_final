@@ -28,7 +28,10 @@
                 <div style="padding-top: 8%; text-align: center; max-width: 100%">
                     <button type="button" id='startButton' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="start()">Start</button>
                     <button type="button" id='getHeatmap' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="getHeatmap()">Get heatMap</button>
-            
+                    <a href="/user_data">
+                        <button type="button" class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold">Go to User Data</button>
+                    </a>
+                    
                 </div>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </div>
@@ -82,16 +85,17 @@ function startSocket() {
             document.getElementById('poseStatus').innerText = "pose comepleted on time";
         }
         clearTimeout(timerId);
-
+        socket.emit('storeAngle')
     });
 }
 
 function getHeatmap() {
-    socket.emit('heatmap')
-    
+    socket.emit('heatmap') 
 }
 
-
+function gethistory() {
+    socket.emit('user_data') 
+}
     
 </script>
 

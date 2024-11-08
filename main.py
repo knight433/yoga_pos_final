@@ -46,14 +46,27 @@ def checkPoseCompletion(bool_list):
     is_proper_pose = all(result[0] for result in bool_list)
     return is_proper_pose
 
-def storeAngles(username,pos_details):
-
-    pass
-
-# Load user data from userData.json
 def load_user_data():
-    with open('static/json/userData.json', 'r') as f:
-        return json.load(f)
+    with open('static/json/userData.json', 'r') as file:
+        return json.load(file)
+
+def save_user_data(data):
+    with open('static/json/userData.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+
+def update_pose(username):
+    global yogaPose
+    user_data = load_user_data()
+    pose_name =  yogaPose
+    # Find the user
+    for user in user_data:
+        if user['username'] == username:
+                user['History'].append({"name": pose_name, "status": "complete"})
+                print(f'added pos to {user}') # debugging
+                break
+
+    save_user_data(user_data)
 
 class CamInput:
     def __init__(self) -> None:
@@ -165,8 +178,7 @@ class CamInput:
                 if genHeatMap == True and self.done == False:
                     self.genHeatMap(temp_list)
                     self.done = True
-                
-                self.frame_count += 1
+
 
                 ret, buffer = cv2.imencode('.jpg', image)
                 frame = buffer.tobytes()
@@ -252,9 +264,21 @@ def conn():
     global genHeatMap
     genHeatMap = True 
 
-@socket.on('addData')
+@socket.on('storeAngle')
 def storeAngles():
-    pass
+    user = session.get('username')  # Ensure session is properly accessed
+    if user:
+        update_pose(user)
+
+@app.route('/user_data')
+def user_data():
+    with open('static/json/userData.json', 'r') as f:
+        users = json.load(f)
+    current_user = session.get('username')
+
+    user_data = next((user for user in users if user['username'] == current_user), None)
+
+    return render_template('user_data.html', user=user_data)
 
 if __name__ == "__main__":
     socket.run(app, allow_unsafe_werkzeug=True, debug=True)

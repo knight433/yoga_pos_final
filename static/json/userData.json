@@ -1,15 +1,30 @@
 [
     {
-      "username": "dhruva",
-      "password": "password123"
+        "username": "dhruva",
+        "password": "password123",
+        "History": [
+            {
+                "name": "Adho Mukha Svanasana",
+                "status": "complete"
+            },
+            {
+                "name": "Adho Mukha Svanasana",
+                "status": "complete"
+            },
+            {
+                "name": "Adho Mukha Svanasana",
+                "status": "complete"
+            }
+        ]
     },
     {
-      "username": "matin",
-      "password": "mysecurepassword"
+        "username": "matin",
+        "password": "mysecurepassword",
+        "History": []
     },
     {
-      "username": "yogi_master",
-      "password": "yoga2024"
+        "username": "yogi_master",
+        "password": "yoga2024",
+        "History": []
     }
-  ]
-  
+]
