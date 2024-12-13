@@ -27,9 +27,8 @@
                 <hr style="margin: 8% auto 0 auto;" width="50%"/>
                 <div style="padding-top: 8%; text-align: center; max-width: 100%">
                     <button type="button" id='startButton' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="start()">Start</button>
-                    <button type="button" id='getHeatmap' class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold" onclick="getHeatmap()">Get heatMap</button>
                     <a href="/user_data">
-                        <button type="button" class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold">Go to User Data</button>
+                        <button type="button" class="btn btn-outline-dark btn-lg px-3 py-1 md-2 fw-bold">History</button>
                     </a>
                     
                 </div>
@@ -52,11 +51,9 @@ function start() {
     
     // Call the function to start the timer
     // startTimer();
-    
-    //to change the start text in the button
     var buttonElement = document.getElementById('startButton');
     console.log(buttonElement)
-    // Change the text content
+
     buttonElement.textContent = 'Started';
 }
 
