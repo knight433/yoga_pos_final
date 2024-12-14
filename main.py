@@ -7,6 +7,7 @@ import os
 import heatmap
 import pyttsx3
 import json
+import threading
 
 app = Flask(__name__)
 app.secret_key = 'mykey'
@@ -95,12 +96,40 @@ class CamInput:
         obj = heatmap.heatMap()
         obj.createHeatmap(tempList)
 
+    def start(self):
+        self.isStarted = True
+        print("Camera input started!")  # Debugging purpose
+
+    def speak(self,tempList):
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 150)  # Speed of speech
+        parts = []
+
+        body_parts = {
+            0: "elbow",
+            1: "knee",
+            2: "shoulder",
+            3: "hip",
+        }
+
+        for i in range(4):
+            if not tempList[i][0]:
+                parts.append(body_parts[i])
+        
+        if len(body_parts) > 1:
+            part = ', '.join(parts[:-1]) + ', and ' + parts[-1]
+        else:
+            part = parts[0]
+        
+        to_say = f'Correct your {part}'
+        engine.say(to_say)
+        engine.runAndWait()
+
+
     def gen_frames(self, socket):
         self.frame_count = 0
         global genHeatMap
         genHeatMap = False
-        # tts_thread = threading.Thread(target=self.speak)
-        # tts_thread.start()
         with self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
             while self.camera.isOpened():
                 success, frame = self.camera.read()
@@ -124,14 +153,18 @@ class CamInput:
                 if res.pose_landmarks:
                     temp_list = self.obj.matchYogaPos(res.pose_landmarks.landmark, yogaPose)
 
-                    if not self.isPoseCorrect:
+                    if not self.isPoseCorrect and self.isStarted:
                         if checkPoseCompletion(temp_list):
                             self.isPoseCorrect = True
                             print(self.isPoseCorrect)
                             socket.emit('complete')
 
+                    if self.frame_count % 200 == 0:
+                        threading.Thread(target=self.speak, args=(temp_list,), daemon=True).start()
+
                     for i in range(4):
                         if not temp_list[i][0]:
+                            
                             for j in range(1, 3):
                                 text1 = str(round(temp_list[i][j]))
                                 x1 = int(res.pose_landmarks.landmark[landVal(i, j)].x * self.width) + 3
@@ -157,6 +190,7 @@ class CamInput:
 
                 ret, buffer = cv2.imencode('.jpg', image)
                 frame = buffer.tobytes()
+                self.frame_count += 1
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -192,7 +226,7 @@ def home():
         json_url = url_for('static', filename='json/pose_details.json')
         return render_template('index.html', json_url=json_url)
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('login')) 
 
 @app.route('/logout')
 def logout():
@@ -205,6 +239,11 @@ def perform():
     yogaPose = request.form.get('selected_pose')
     print(yogaPose)
     return redirect(url_for('yoga'))
+
+@socket.on('start')
+def handle_start():
+    cam_obj.start()  # Set isStarted to True
+    socket.emit('started_ack', {'message': 'Camera started'})  # Optional acknowledgment
 
 
 @app.route('/yoga')
@@ -237,7 +276,8 @@ def connect():
 def conn():
     print('here') #debugging
     global genHeatMap
-    genHeatMap = True 
+    genHeatMap = True
+ 
 
 @socket.on('storeAngle')
 def storeAngles():

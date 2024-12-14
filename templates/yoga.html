@@ -48,7 +48,7 @@ function start() {
     
     // Call the function to start the socket
     startSocket();
-    
+    socket.emit('start');
     // Call the function to start the timer
     // startTimer();
     var buttonElement = document.getElementById('startButton');
