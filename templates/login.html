@@ -20,6 +20,8 @@
         {% if error %}
         <p>{{ error }}</p>
         {% endif %}
+        
+        <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
     </form>
 </body>
 </html>

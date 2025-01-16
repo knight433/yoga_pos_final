@@ -74,7 +74,7 @@ class CamInput:
       
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_pose = mp.solutions.pose
-        self.camera = cv2.VideoCapture(0)
+        self.camera = cv2.VideoCapture(1)
         self.obj = YogaPose.MatchYogaPos()
 
         self.height = 640
@@ -298,6 +298,34 @@ def user_data():
 @app.route('/meditation')
 def meditation():
     return render_template('meditation.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Load existing user data
+        user_data = load_user_data()
+
+        # Check if the username already exists
+        if any(user['username'] == username for user in user_data):
+            error = 'Username already exists. Please choose another one.'
+            return render_template('signup.html', error=error)
+
+        # Add the new user
+        new_user = {
+            "username": username,
+            "password": password,
+            "History": []
+        }
+        user_data.append(new_user)
+        save_user_data(user_data)  # Save updated data
+
+        # Redirect to login page after successful sign-up
+        return redirect(url_for('login'))
+
+    return render_template('signup.html')
 
 if __name__ == "__main__":
     socket.run(app, allow_unsafe_werkzeug=True, debug=True)

@@ -34,5 +34,10 @@
         "username": "yogi_master",
         "password": "yoga2024",
         "History": []
+    },
+    {
+        "username": "testUser123",
+        "password": "qwerasdf",
+        "History": []
     }
 ]
