@@ -299,6 +299,10 @@ def user_data():
 def meditation():
     return render_template('meditation.html')
 
+@app.route('/back')
+def back():
+    return render_template('index.html')
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
