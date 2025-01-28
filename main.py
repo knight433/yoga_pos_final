@@ -74,7 +74,7 @@ class CamInput:
       
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_pose = mp.solutions.pose
-        self.camera = cv2.VideoCapture(1)
+        self.camera = cv2.VideoCapture(0)
         self.obj = YogaPose.MatchYogaPos()
 
         self.height = 640
@@ -298,10 +298,6 @@ def user_data():
 @app.route('/meditation')
 def meditation():
     return render_template('meditation.html')
-
-@app.route('/back')
-def back():
-    return render_template('index.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
