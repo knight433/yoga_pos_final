@@ -281,9 +281,17 @@ def conn():
 
 @socket.on('storeAngle')
 def storeAngles():
-    user = session.get('username')  # Ensure session is properly accessed
-    if user:
-        update_pose(user)
+    user = session.get('username')
+    print("storeAngle event received")  # Debugging
+    print(f"Session User: {user}")  # Debugging
+    
+    if not user:
+        print("Error: User not found in session")
+        return
+    
+    update_pose(user)
+    print(f"Pose updated for {user}")
+
 
 @app.route('/user_data')
 def user_data():

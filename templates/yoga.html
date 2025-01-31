@@ -63,10 +63,11 @@ function startSocket() {
     socket = io.connect();
     socket.on('connect', function() {
         start = new Date().getTime();
-        console.log("connected");
+        console.log("Socket connected");
     });
 
     socket.on('complete', function() {
+        console.log("Received 'complete' event from server");
         var poseStatus = document.getElementById('poseStatus');
         poseStatus.innerHTML = "Pose Complete";
         poseStatus.style.color = "green";
@@ -80,10 +81,11 @@ function startSocket() {
         } else {
             document.getElementById('poseStatus').innerText = "Pose completed on time";
         }
-        clearTimeout(timerId);
-        socket.emit('storeAngle');
+        console.log("Emitting storeAngle event");
+        socket.emit('storeAngle');  // Ensure this event is actually sent
     });
 }
+
 
 function getHeatmap() {
     socket.emit('heatmap'); 
