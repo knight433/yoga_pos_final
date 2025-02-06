@@ -132,15 +132,16 @@ def somefuntion(landmarks):
 class MatchYogaPos:
 
     def __init__(self):
-        with open('C:\programs\projects\yoga_pos\git code\YogaCorrector\poses_data.json', 'r') as json_file:
+        # with open('C:\programs\projects\yoga_pos\git code\YogaCorrector\poses_data.json', 'r') as json_file:
+        #     poses_data = json.load(json_file)
+        with open('poses_data copy.json', 'r') as json_file:
             poses_data = json.load(json_file)
         
         self.angle_list = poses_data
     
-    def _compare(self,angles:list,refAngles:list):
+    def _compare(self,angles:list,refAngles:list,err:int):
         
-        err = 30
-        t1 = angles
+        t1 = angles.copy()
         angles.sort()
         refAngles.sort()
         ret_list = [True,-1,-1]
@@ -164,11 +165,12 @@ class MatchYogaPos:
     def matchYogaPos(self,img_landmarks,posName):
         
         ref_angles = self.angle_list[posName]
+        err = ref_angles[-1]
         angles = somefuntion(img_landmarks)
         bool_list = []
-        bool_list.append(self._compare([angles[0],angles[1]],[ref_angles[0],ref_angles[1]]))
-        bool_list.append(self._compare([angles[2],angles[3]],[ref_angles[2],ref_angles[3]]))
-        bool_list.append(self._compare([angles[4],angles[5]],[ref_angles[4],ref_angles[5]])) 
-        bool_list.append(self._compare([angles[6],angles[7]],[ref_angles[6],ref_angles[7]]))
+        bool_list.append(self._compare([angles[0],angles[1]],[ref_angles[0],ref_angles[1]],err[0]))
+        bool_list.append(self._compare([angles[2],angles[3]],[ref_angles[2],ref_angles[3]],err[1]))
+        bool_list.append(self._compare([angles[4],angles[5]],[ref_angles[4],ref_angles[5]],err[2])) 
+        bool_list.append(self._compare([angles[6],angles[7]],[ref_angles[6],ref_angles[7]],err[3]))
 
         return bool_list

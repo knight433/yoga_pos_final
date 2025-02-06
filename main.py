@@ -4,7 +4,6 @@ import YogaPose
 import mediapipe as mp
 import cv2
 import os
-import heatmap
 import pyttsx3
 import json
 import threading
@@ -82,7 +81,7 @@ class CamInput:
         self.text = 'good'
         self.fontFace = cv2.FONT_HERSHEY_SIMPLEX
         self.fontScale = 0.5
-        self.color = (0, 225, 0)  # Color in BGR format
+        self.color = (0, 225, 0)  
         self.thickness = 1
         self.lineType = cv2.LINE_AA
         self.x1 = 10
@@ -91,10 +90,6 @@ class CamInput:
         self.isStarted = False
         self.isPoseCorrect = False
         self.done = False
-
-    def genHeatMap(self,tempList):
-        obj = heatmap.heatMap()
-        obj.createHeatmap(tempList)
 
     def start(self):
         self.isStarted = True
@@ -116,7 +111,7 @@ class CamInput:
             if not tempList[i][0]:
                 parts.append(body_parts[i])
         
-        if len(body_parts) > 1:
+        if len(parts) > 1:
             part = ', '.join(parts[:-1]) + ', and ' + parts[-1]
         else:
             part = parts[0]
@@ -159,7 +154,7 @@ class CamInput:
                             print(self.isPoseCorrect)
                             socket.emit('complete')
 
-                    if self.frame_count % 200 == 0:
+                    if self.frame_count % 800 == 0:
                         threading.Thread(target=self.speak, args=(temp_list,), daemon=True).start()
 
                     for i in range(4):
@@ -182,10 +177,6 @@ class CamInput:
                                 cv2.putText(image, self.text, org1, self.fontFace, self.fontScale, color,
                                             self.thickness,
                                             self.lineType)
-
-                if genHeatMap == True and self.done == False:
-                    self.genHeatMap(temp_list)
-                    self.done = True
 
 
                 ret, buffer = cv2.imencode('.jpg', image)
@@ -271,12 +262,6 @@ def close_webcam():
 @socket.on('connect')
 def connect():
     print('Socket Connected')
-
-@socket.on('heatmap')
-def conn():
-    print('here') #debugging
-    global genHeatMap
-    genHeatMap = True
  
 
 @socket.on('storeAngle')
